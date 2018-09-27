@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "browserify -t vueify -e main.js -o www/js/app.js",
+    "build": "browserify -t vueify -e main.js -o www/app.js",
     "test": "mocha *.test.js"
   },
   "devDependencies": {

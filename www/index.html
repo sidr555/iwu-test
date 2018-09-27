@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Country selector</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>{{title}}</h1>
+
+        <country-suggest
+                title="Country Suggest"
+                placeholder="Выбери страну"
+                api-url="https://restcountries.eu/rest/v2/name/{name}"
+                flag-field="flag"
+        >
+        </country-suggest>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

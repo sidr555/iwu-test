@@ -1,0 +1,17 @@
+{
+  "name": "iwu",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "browserify -t vueify -e main.js -o www/js/app.js",
+    "watch": "watchify -t vueify -e main.js -o www/js/app.js",
+    "test": "mocha *.test.js"
+  },
+  "dependencies": {
+    "vue-select": "^2.5.1"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "mocha": "^5.2.0"
+  }
+}

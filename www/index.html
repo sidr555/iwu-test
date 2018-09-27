@@ -7,13 +7,13 @@
 </head>
 <body>
     <div id="app">
-        <h1>{{title}}</h1>
 
         <country-suggest
-                title="Country Suggest"
+                :title="title"
                 placeholder="Выбери страну"
                 api-url="https://restcountries.eu/rest/v2/name/{name}"
-                flag-field="flag"
+                :flag-field="getFlag"
+                @select="onSelect"
         >
         </country-suggest>
 
@@ -21,5 +21,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script src="js/app.js"></script>
+
+    <script type="text/javascript">
+        var flagger = function(country) {
+            return country.flag;
+        }
+    </script>
 </body>
 </html>

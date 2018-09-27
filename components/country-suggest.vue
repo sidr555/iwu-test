@@ -2,8 +2,7 @@
     <div class="country-suggest">
 
         <h2>{{ title }}</h2>
-        <div>apiURL: {{apiUrl}}</div>
-        <!--<input class="dropdown" type="text" v-bind:value="query" v-bind:placeholder="placeholder" @keyup.prevent="onKeyUp"/>-->
+
         <input class="dropdown" type="text" v-model="country.name" :placeholder="placeholder" @keyup.prevent="onKeyUp" @focus="onFocus"/>
 
         <ul class="dropdown" v-show="showDropDown">
@@ -12,9 +11,7 @@
                 <span class="dropdown-title">{{ country.name }}</span>
             </li>
         </ul>
-        <pre>{{ $data }}</pre>
     </div>
-
 </template>
 
 
@@ -29,53 +26,27 @@
             "placeholder",
             "apiUrl",
             "flagField",
+            "debug"
         ],
         data: function() {
             return {
-                query: "rus",
-                showDropDown: false,
-                country: {
-                    name: ""
-                },
+                country: {name:''},
                 countries: [],
-                activeIndex: -1
+                activeIndex: -1,
+                showDropDown: false,
             }
         },
         computed: {
             resource: function() {
                 return this.$resource(this.apiUrl);
             },
-            // preparedCountries: function() {
-            //     var flagField = this.flagField;
-            //     var flagFn = typeof this.flagField === "function" ? flagField : function(country) {
-            //         return country[flagField];
-            //     };
-            //     var countries = this.countries.reduce(function (collection, country) {
-            //         collection.push({
-            //             name: country.name + " !!",
-            //             flag: flagFn(country)
-            //         });
-            //         return collection;
-            //     }, []);
-            //
-            //     console.log("preparedCountries", countries);
-            //
-            //     return countries;
-            //
-            //
-            //      //
-            //      // return this.countries.sort(function(a,b) {
-            //      //     return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
-            //      // })
-            // }
         },
         methods: {
+            /**
+             * Обработка нажатия клавиш
+             */
             onKeyUp: function(event) {
-                event.preventDefault();
-                //console.log(this, event.key, this.query);
                 switch (event.key) {
-                    // case "Enter":
-                    //     return this.enter();
                     case "Escape":
                         return this.reset();
                     case "ArrowDown":
@@ -94,10 +65,16 @@
                         this.getCountries(this.country.name);
                 }
             },
+            /**
+             * Обработка фокуса на поле поиска
+             */
             onFocus: function(event) {
                 event.target.select();
                 this.showDropDown = false;
             },
+            /**
+             * Сбрасывает список о очищает поле поиска
+             */
             reset: function() {
                 this.countries = [];
                 this.country = {};
@@ -105,8 +82,12 @@
                 this.activeIndex = -1;
 
             },
+
+            /**
+             * Отмечает активным элемент с указанным индексом в списке
+             * и генерит событие select
+             */
             select: function(index) {
-                console.log("select", index)
                 if (this.country) {
                     this.country.active = false;
                 }
@@ -115,15 +96,30 @@
                 this.country.active = true;
                 this.activeIndex = index;
 
+                this.$emit("select", this.country);
+
             },
+            /**
+             * Вернуть значение флага в соответствии с типом переданного компоненту
+             * параметра flagField: поле, глобальная функция, vue-метод
+             * @param object country
+             * @returns {*}
+             */
             getFlag: function(country) {
                 if (typeof this.flagField === "function") {
                     return this.flagField(country);
+                } else if (typeof window[this.flagField] === "function") {
+                    return window[this.flagField](country);
                 } else if (typeof country[this.flagField] !== 'undefined') {
                     return country[this.flagField];
                 }
                 return '';
             },
+
+            /**
+             * Грузит страны по API
+             * @param string query
+             */
             getCountries: function(query) {
                 query = query.trim();
                 if (query === "") {

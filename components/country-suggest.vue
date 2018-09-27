@@ -1,16 +1,13 @@
 <template id="country-suggest-template">
     <div class="country-suggest">
-        <!--<input class="dropdown" type="text" placeholder="Выбери страну" v-model="{{ query }}" @keyup.prevent="onKeyUp"/>
-        v-bind:query="query"
-        v-bind:data-id="country.alpha2Code"
-         -->
+
         <h2>{{ title }}</h2>
         <div>apiURL: {{apiUrl}}</div>
         <!--<input class="dropdown" type="text" v-bind:value="query" v-bind:placeholder="placeholder" @keyup.prevent="onKeyUp"/>-->
-        <input class="dropdown" type="text" v-model="country.name" :placeholder="placeholder" @keyup.prevent="onKeyUp"/>
+        <input class="dropdown" type="text" v-model="country.name" :placeholder="placeholder" @keyup.prevent="onKeyUp" @focus="onFocus"/>
 
         <ul class="dropdown" v-show="showDropDown">
-            <li v-for="country in countries" @click="select(country.code)" :data-id="country.code">
+            <li v-for="(country, index) in countries" @click="select(index)" :data-id="country.code" :country="country" :class="{active: country.active}">
                 <img class="dropdown-flag" :src="country.flag"/>
                 <span class="dropdown-title">{{ country.name }}</span>
             </li>
@@ -20,11 +17,10 @@
 
 </template>
 
+
 <script>
     var VueResource = require("vue-resource");
-    var VueSelect = require("vue-select");
     Vue.use(VueResource);
-    Vue.use(VueSelect);
 
     module.exports = {
         template: "#country-suggest-template",
@@ -41,7 +37,8 @@
                 country: {
                     name: ""
                 },
-                countries: []
+                countries: [],
+                activeIndex: -1
             }
         },
         computed: {
@@ -75,52 +72,48 @@
         methods: {
             onKeyUp: function(event) {
                 event.preventDefault();
-                console.log(this, event.key, this.query);
-                //emit('input', event.target.value)
+                //console.log(this, event.key, this.query);
                 switch (event.key) {
-                    case "Enter":
-                        return this.onEnter();
+                    // case "Enter":
+                    //     return this.enter();
                     case "Escape":
                         return this.reset();
+                    case "ArrowDown":
+                        if (this.showDropDown && this.countries.length) {
+                            this.select(this.activeIndex + 1);
+                        }
+                        break;
+
+                    case "ArrowUp":
+                        if (this.showDropDown && this.countries.length && this.activeIndex > 0) {
+                            this.select(this.activeIndex - 1);
+                        }
+                        break;
                     default:
-                        console.log(this.country)
-                        //this.showDropDown = this.query !== "";
+                        //console.log(this.country);
                         this.getCountries(this.country.name);
                 }
             },
-            onEnter: function() {
-                //alert("enter")
-
+            onFocus: function(event) {
+                event.target.select();
+                this.showDropDown = false;
             },
             reset: function() {
                 this.countries = [];
                 this.country = {};
                 this.showDropDown = false;
+                this.activeIndex = -1;
 
             },
-            //onSelect: function(event) {
-            select: function(code) {
-                var i = 0;
-                for (;i<this.countries.length;i++) {
-                    if (this.countries[i].code === code) {
-                        this.country = this.countries[i];
-                    }
+            select: function(index) {
+                console.log("select", index)
+                if (this.country) {
+                    this.country.active = false;
                 }
 
-                //this.$emit("selectCountry", this.country);
-
-                // this.countries.forEach(function(country){
-                //     if (country.name === event.target.textContent) {
-                //         this.country = country;
-                //     }
-                //     //console.log(country.name)
-                // });
-
-
-                // var id = $(event.target).closest("li").data("id");
-                // var country = this.countries[id];
-                // console.log("selected ", id, this.countries[id]);
-                // //this.query = country.name;
+                this.country = this.countries[index];
+                this.country.active = true;
+                this.activeIndex = index;
 
             },
             getFlag: function(country) {
@@ -143,14 +136,13 @@
                                 collection.push({
                                     code: country.alpha2Code,
                                     name: country.name,
-                                    flag: flagFn(country)
+                                    flag: flagFn(country),
+                                    active: false
                                 });
                                 return collection;
                             }, []);
 
                             this.showDropDown = true;
-
-                            //console.log("preparedCountries", this.countries);
                         }
                     }).catch(function(err){
                         //console.log(err);
@@ -177,6 +169,8 @@
     ul.dropdown {
         list-style: none;
         width: 240px;
+        height: 400px;
+        overflow-y: scroll;
         background-color: #fff;
         padding: 6px 0;
         border-radius: 5px;
@@ -189,15 +183,24 @@
         display: block;
         padding: 10px 30px;
     }
+    ul.dropdown li:hover {
+        background-color: #9ba3ab;
+        color: white;
+    }
+
+    ul.dropdown li.active {
+        background-color: #5277ab;
+        color: white;
+    }
+    ul.dropdown li.active:hover {
+        background-color: #5277ab;
+        color: white;
+    }
 
     ul.dropdown li:last-child {
         border-bottom: none;
     }
 
-    ul.dropdown li:hover {
-        background-color: #3c4dab;
-        color: white;
-    }
 
     img.dropdown-flag {
         width: 30px;

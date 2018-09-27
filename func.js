@@ -1,7 +1,7 @@
 /**
  * Author: Dmitry Sidorov
  * Email: sidr@sidora.net
- * Date: 26.09.18
+ * Date: 27.09.18
  */
 
 function func(s, a, b) {

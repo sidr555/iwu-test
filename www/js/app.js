@@ -1,8 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("input.dropdown {\n    width: 220px;\n    height: 30px;\n    padding: 6px 10px;\n    border-radius: 5px;\n}\n\nul.dropdown {\n    list-style: none;\n    width: 240px;\n    background-color: #fff;\n    padding: 6px 0;\n    border-radius: 5px;\n    position: relative;\n    top: -13px;\n    left: 5px;\n}\n\nul.dropdown li {\n    display: block;\n    padding: 10px 30px;\n}\n\nul.dropdown li:last-child {\n    border-bottom: none;\n}\n\nul.dropdown li:hover {\n    background-color: #3c4dab;\n    color: white;\n}\n\nimg.dropdown-flag {\n    width: 30px;\n    height: 20px;\n    vertical-align: middle;\n    border: 1px solid #8a8a8a;\n}\n\n.dropdown-title {\n    height: 20px;\n}")
+var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("input.dropdown {\n    width: 220px;\n    height: 30px;\n    padding: 6px 10px;\n    border-radius: 5px;\n}\n\nul.dropdown {\n    list-style: none;\n    width: 240px;\n    height: 400px;\n    overflow-y: scroll;\n    background-color: #fff;\n    padding: 6px 0;\n    border-radius: 5px;\n    position: relative;\n    top: -13px;\n    left: 5px;\n}\n\nul.dropdown li {\n    display: block;\n    padding: 10px 30px;\n}\nul.dropdown li:hover {\n    background-color: #9ba3ab;\n    color: white;\n}\n\nul.dropdown li.active {\n    background-color: #5277ab;\n    color: white;\n}\nul.dropdown li.active:hover {\n    background-color: #5277ab;\n    color: white;\n}\n\nul.dropdown li:last-child {\n    border-bottom: none;\n}\n\n\nimg.dropdown-flag {\n    width: 30px;\n    height: 20px;\n    vertical-align: middle;\n    border: 1px solid #8a8a8a;\n}\n\n.dropdown-title {\n    height: 20px;\n}")
 ;(function(){
-//
-//
 //
 //
 //
@@ -42,7 +40,8 @@ module.exports = {
             country: {
                 name: ""
             },
-            countries: []
+            countries: [],
+            activeIndex: -1
         }
     },
     computed: {
@@ -79,49 +78,49 @@ module.exports = {
             console.log(this, event.key, this.query);
             //emit('input', event.target.value)
             switch (event.key) {
-                case "Enter":
-                    return this.onEnter();
+                // case "Enter":
+                //     return this.enter();
                 case "Escape":
                     return this.reset();
+                case "ArrowDown":
+                    if (this.showDropDown && this.countries.length) {
+                        this.select(this.activeIndex + 1);
+                    }
+                    break;
+
+                case "ArrowUp":
+                    if (this.showDropDown && this.countries.length && this.activeIndex > 0) {
+                        this.select(this.activeIndex - 1);
+                    }
+                    break;
                 default:
-                    console.log(this.country)
+                    console.log(this.country);
                     //this.showDropDown = this.query !== "";
                     this.getCountries(this.country.name);
             }
         },
-        onEnter: function() {
-            //alert("enter")
-
+        onFocus: function(event) {
+            event.target.select();
+            this.showDropDown = false;
         },
+        // enter: function() {
+        // },
         reset: function() {
             this.countries = [];
             this.country = {};
             this.showDropDown = false;
+            this.activeIndex = -1;
 
         },
-        //onSelect: function(event) {
-        select: function(code) {
-            var i = 0;
-            for (;i<this.countries.length;i++) {
-                if (this.countries[i].code === code) {
-                    this.country = this.countries[i];
-                }
+        select: function(index) {
+            console.log("select", index)
+            if (this.country) {
+                this.country.active = false;
             }
 
-            //this.$emit("selectCountry", this.country);
-
-            // this.countries.forEach(function(country){
-            //     if (country.name === event.target.textContent) {
-            //         this.country = country;
-            //     }
-            //     //console.log(country.name)
-            // });
-
-
-            // var id = $(event.target).closest("li").data("id");
-            // var country = this.countries[id];
-            // console.log("selected ", id, this.countries[id]);
-            // //this.query = country.name;
+            this.country = this.countries[index];
+            this.country.active = true;
+            this.activeIndex = index;
 
         },
         getFlag: function(country) {
@@ -144,14 +143,13 @@ module.exports = {
                             collection.push({
                                 code: country.alpha2Code,
                                 name: country.name,
-                                flag: flagFn(country)
+                                flag: flagFn(country),
+                                active: false
                             });
                             return collection;
                         }, []);
 
                         this.showDropDown = true;
-
-                        //console.log("preparedCountries", this.countries);
                     }
                 }).catch(function(err){
                     //console.log(err);
@@ -170,7 +168,7 @@ module.exports = {
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"country-suggest"},[_c('h2',[_vm._v(_vm._s(_vm.title))]),_vm._v(" "),_c('div',[_vm._v("apiURL: "+_vm._s(_vm.apiUrl))]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.country.name),expression:"country.name"}],staticClass:"dropdown",attrs:{"type":"text","placeholder":_vm.placeholder},domProps:{"value":(_vm.country.name)},on:{"keyup":function($event){$event.preventDefault();return _vm.onKeyUp($event)},"input":function($event){if($event.target.composing){ return; }_vm.$set(_vm.country, "name", $event.target.value)}}}),_vm._v(" "),_c('ul',{directives:[{name:"show",rawName:"v-show",value:(_vm.showDropDown),expression:"showDropDown"}],staticClass:"dropdown"},_vm._l((_vm.countries),function(country){return _c('li',{attrs:{"data-id":country.code},on:{"click":function($event){_vm.select(country.code)}}},[_c('img',{staticClass:"dropdown-flag",attrs:{"src":country.flag}}),_vm._v(" "),_c('span',{staticClass:"dropdown-title"},[_vm._v(_vm._s(country.name))])])})),_vm._v(" "),_c('pre',[_vm._v(_vm._s(_vm.$data))])])}
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"country-suggest"},[_c('h2',[_vm._v(_vm._s(_vm.title))]),_vm._v(" "),_c('div',[_vm._v("apiURL: "+_vm._s(_vm.apiUrl))]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.country.name),expression:"country.name"}],staticClass:"dropdown",attrs:{"type":"text","placeholder":_vm.placeholder},domProps:{"value":(_vm.country.name)},on:{"keyup":function($event){$event.preventDefault();return _vm.onKeyUp($event)},"focus":_vm.onFocus,"input":function($event){if($event.target.composing){ return; }_vm.$set(_vm.country, "name", $event.target.value)}}}),_vm._v(" "),_c('ul',{directives:[{name:"show",rawName:"v-show",value:(_vm.showDropDown),expression:"showDropDown"}],staticClass:"dropdown"},_vm._l((_vm.countries),function(country,index){return _c('li',{class:{active: country.active},attrs:{"data-id":country.code,"country":country},on:{"click":function($event){_vm.select(index)}}},[_c('img',{staticClass:"dropdown-flag",attrs:{"src":country.flag}}),_vm._v(" "),_c('span',{staticClass:"dropdown-title"},[_vm._v(_vm._s(country.name))])])})),_vm._v(" "),_c('pre',[_vm._v(_vm._s(_vm.$data))])])}
 __vue__options__.staticRenderFns = []
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

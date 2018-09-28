@@ -55,7 +55,8 @@
                     case "Escape":
                         return this.reset();
                     case "ArrowDown":
-                        if (this.showDropDown && this.countries.length) {
+                        if (this.countries.length) {
+                            this.showDropDown = true;
                             this.select(this.activeIndex + 1);
                         }
                         break;
@@ -104,9 +105,9 @@
                 this.country.active = true;
                 this.activeIndex = index;
 
-                _.delay(function() {
+                _.delay(_.bind(function() {
                     this.$emit("select", this.country)
-                }, 1);
+                }, this), 1);
 
 
             },

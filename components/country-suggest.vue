@@ -7,11 +7,14 @@
                v-model="country.name"
                @keyup.prevent="onKeyUp" @focus="onFocus"/>
 
-        <ul class="dropdown" v-show="showDropDown">
+        <ul v-if="countries.length" class="dropdown" v-show="showDropDown">
             <li v-for="(country, index) in countries" @click="select(index)" :data-id="country.code" :country="country" :class="{active: country.active}">
                 <img class="dropdown-flag" :src="country.flag"/>
                 <span class="dropdown-title">{{ country.name }}</span>
             </li>
+        </ul>
+        <ul v-else class="dropdown" v-show="showDropDown">
+            <li>Не найдены</li>
         </ul>
     </div>
 </template>
@@ -34,7 +37,6 @@
         ],
         data: function() {
             return {
-                name: "aaa",
                 country: {name:''},
                 countries: [],
                 activeIndex: -1,
@@ -73,7 +75,7 @@
                         if (this.country.name.trim() === "") {
                             this.reset();
                         } else {
-                            (_.debounce(_.bind(this.getCountries, this), parseInt(this.delay)||500))();
+                            this.getCountries();
                         }
                 }
             },
@@ -136,7 +138,10 @@
              * @param string query
              */
             getCountries: function() {
-                var query = this.country.name.trim();
+                return _.bind(this.getCountriesDebounces, this)();
+            },
+            getCountriesDebounces: _.debounce(function() {
+                var query = this.country.name ? this.country.name.trim() : '';
                 this.resource.get({name: query}).then(function(response){
                     if (response.body && response.body.length) {
                         var flagFn = this.getFlag;
@@ -155,9 +160,9 @@
                 }).catch(function(err){
                     //console.log(err);
                 });
-            }
+            }, parseInt(this.delay)||500)
         },
-        created: function() {
+        mounted: function() {
             if (this.country.name !== "") {
                 this.getCountries(this.country.name);
             }

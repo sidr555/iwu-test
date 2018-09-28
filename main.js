@@ -1,10 +1,8 @@
 
-var countrySuggest = require("./components/country-suggest.vue");
-
 new Vue({
     el: '#app',
     components: {
-        countrySuggest: countrySuggest
+        countrySuggest: require("./components/country-suggest.vue")
     },
     data: {
         title: "Country suggest",
@@ -16,7 +14,6 @@ new Vue({
          * @param object country
          */
         onSelect: function(country) {
-            //alert(country.name + " is selected");
             this.name = country.name;
         },
         /**

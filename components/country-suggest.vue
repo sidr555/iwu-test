@@ -141,7 +141,7 @@
                 return _.bind(this.getCountriesDebounces, this)();
             },
             getCountriesDebounces: _.debounce(function() {
-                var query = this.country.name ? this.country.name.trim() : '';
+                const query = this.country.name ? this.country.name.trim() : '';
                 this.resource.get({name: query}).then(function(response){
                     if (response.body && response.body.length) {
                         var flagFn = this.getFlag;
@@ -170,7 +170,10 @@
     }
 </script>
 
-<style>
+<style lang="less">
+    .dropdown-title {
+        height: 20px;
+    }
     input.dropdown {
         width: 220px;
         height: 30px;
@@ -190,40 +193,38 @@
         position: relative;
         top: -13px;
         left: 5px;
+
+        li {
+            display: block;
+            padding: 10px 30px;
+
+            &:hover {
+                background-color: #9ba3ab;
+                color: white;
+            }
+
+            &.active {
+                background-color: #5277ab;
+                color: white;
+
+                &:hover {
+                    background-color: #5277ab;
+                    color: white;
+                }
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        img.dropdown-flag {
+            width: 30px;
+            height: 20px;
+            vertical-align: middle;
+            border: 1px solid #8a8a8a;
+        }
     }
 
-    ul.dropdown li {
-        display: block;
-        padding: 10px 30px;
-    }
-    ul.dropdown li:hover {
-        background-color: #9ba3ab;
-        color: white;
-    }
-
-    ul.dropdown li.active {
-        background-color: #5277ab;
-        color: white;
-    }
-    ul.dropdown li.active:hover {
-        background-color: #5277ab;
-        color: white;
-    }
-
-    ul.dropdown li:last-child {
-        border-bottom: none;
-    }
-
-
-    img.dropdown-flag {
-        width: 30px;
-        height: 20px;
-        vertical-align: middle;
-        border: 1px solid #8a8a8a;
-    }
-
-    .dropdown-title {
-        height: 20px;
-    }
 
 </style>

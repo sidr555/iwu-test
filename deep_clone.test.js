@@ -6,7 +6,7 @@
 
 require("./deep_clone");
 
-var obj = {
+const obj = {
     "a": [1, 2, 3],
     "b": "",
     "obj": {

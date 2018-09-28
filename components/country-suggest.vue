@@ -3,7 +3,9 @@
 
         <h2>{{ title }}</h2>
 
-        <input class="dropdown" type="text" v-model="country.name" :placeholder="placeholder" @keyup.prevent="onKeyUp" @focus="onFocus"/>
+        <input class="dropdown" type="text" :placeholder="placeholder"
+               v-model="country.name"
+               @keyup.prevent="onKeyUp" @focus="onFocus"/>
 
         <ul class="dropdown" v-show="showDropDown">
             <li v-for="(country, index) in countries" @click="select(index)" :data-id="country.code" :country="country" :class="{active: country.active}">
@@ -17,6 +19,8 @@
 
 <script>
     var VueResource = require("vue-resource");
+    var _ = require("lodash");
+
     Vue.use(VueResource);
 
     module.exports = {
@@ -26,20 +30,21 @@
             "placeholder",
             "apiUrl",
             "flagField",
-            "debug"
+            "delay"
         ],
         data: function() {
             return {
+                name: "aaa",
                 country: {name:''},
                 countries: [],
                 activeIndex: -1,
-                showDropDown: false,
+                showDropDown: false
             }
         },
         computed: {
             resource: function() {
                 return this.$resource(this.apiUrl);
-            },
+            }
         },
         methods: {
             /**
@@ -61,8 +66,11 @@
                         }
                         break;
                     default:
-                        //console.log(this.country);
-                        this.getCountries(this.country.name);
+                        if (this.country.name.trim() === "") {
+                            this.reset();
+                        } else {
+                            (_.debounce(_.bind(this.getCountries, this), parseInt(this.delay)||500))();
+                        }
                 }
             },
             /**
@@ -120,30 +128,26 @@
              * Грузит страны по API
              * @param string query
              */
-            getCountries: function(query) {
-                query = query.trim();
-                if (query === "") {
-                    this.reset();
-                } else {
-                    this.resource.get({name: query}).then(function(response){
-                        if (response.body && response.body.length) {
-                            var flagFn = this.getFlag;
-                            this.countries = response.body.reduce(function (collection, country) {
-                                collection.push({
-                                    code: country.alpha2Code,
-                                    name: country.name,
-                                    flag: flagFn(country),
-                                    active: false
-                                });
-                                return collection;
-                            }, []);
+            getCountries: function() {
+                var query = this.country.name.trim();
+                this.resource.get({name: query}).then(function(response){
+                    if (response.body && response.body.length) {
+                        var flagFn = this.getFlag;
+                        this.countries = response.body.reduce(function (collection, country) {
+                            collection.push({
+                                code: country.alpha2Code,
+                                name: country.name,
+                                flag: flagFn(country),
+                                active: false
+                            });
+                            return collection;
+                        }, []);
 
-                            this.showDropDown = true;
-                        }
-                    }).catch(function(err){
-                        //console.log(err);
-                    });
-                }
+                        this.showDropDown = true;
+                    }
+                }).catch(function(err){
+                    //console.log(err);
+                });
             }
         },
         created: function() {

@@ -7,7 +7,8 @@ new Vue({
         countrySuggest: countrySuggest
     },
     data: {
-        title: "Country suggest"
+        title: "Country suggest",
+        name: "-"
     },
     methods: {
         /**
@@ -15,7 +16,8 @@ new Vue({
          * @param object country
          */
         onSelect: function(country) {
-            alert(country.name + " is selected");
+            //alert(country.name + " is selected");
+            this.name = country.name;
         },
         /**
          * Кастомная функция для возврата параметра флага из объекта страны

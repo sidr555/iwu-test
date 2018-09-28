@@ -56,8 +56,11 @@
                         return this.reset();
                     case "ArrowDown":
                         if (this.countries.length) {
-                            this.showDropDown = true;
-                            this.select(this.activeIndex + 1);
+                            if (this.showDropDown) {
+                                this.select(this.activeIndex + 1);
+                            } else {
+                                this.showDropDown = true;
+                            }
                         }
                         break;
 

@@ -104,7 +104,10 @@
                 this.country.active = true;
                 this.activeIndex = index;
 
-                this.$emit("select", this.country);
+                _.delay(function() {
+                    this.$emit("select", this.country)
+                }, 1);
+
 
             },
             /**

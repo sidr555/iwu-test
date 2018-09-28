@@ -169,8 +169,9 @@
     ul.dropdown {
         list-style: none;
         width: 240px;
-        height: 400px;
-        overflow-y: scroll;
+        max-height: 400px;
+        overflow-x: hidden;
+        overflow-y: auto;
         background-color: #fff;
         padding: 6px 0;
         border-radius: 5px;
